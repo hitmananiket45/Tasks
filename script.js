@@ -7,20 +7,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskList = document.getElementById("taskList");
     const searchInput = document.getElementById("searchInput");
     const filterStatus = document.getElementById("filterStatus");
-
     const userName = document.getElementById("userName");
     const userEmail = document.getElementById("userEmail");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const themeSelector = document.getElementById("themeSelector");
     const clearDataBtn = document.getElementById("clearDataBtn");
-
+    
     // Load tasks from local storage
     const loadTasks = () => {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.forEach(task => {
             addTaskToDOM(task);
         });
-        updateDashboard();
+        updateDashboardStats();
     };
 
     // Add task to the DOM
@@ -46,13 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
             task.completed = !task.completed;
             saveTasksToLocalStorage();
             loadTaskList();
-            updateDashboard();
+            updateDashboardStats();
         });
 
         li.querySelector('.delete-btn').addEventListener('click', () => {
             removeTaskFromLocalStorage(task);
             li.remove();
-            updateDashboard();
+            updateDashboardStats();
         });
     };
 
@@ -72,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
             taskDescription.value = "";
             dueDate.value = "";
             priority.value = "";
-            updateDashboard();
+            updateDashboardStats();
         }
     });
 
@@ -111,11 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 addTaskToDOM(task);
             }
         });
-        updateDashboard();
     };
 
-    // Update Dashboard Information
-    const updateDashboard = () => {
+    // Dashboard Stats Update
+    const updateDashboardStats = () => {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const totalTasks = tasks.length;
         const completedTasks = tasks.filter(task => task.completed).length;
@@ -125,26 +123,27 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("completedTasks").innerText = completedTasks;
         document.getElementById("pendingTasks").innerText = pendingTasks;
 
-        // Update upcoming tasks
+        const upcomingTasks = tasks.filter(task => !task.completed).slice(0, 5);
         const upcomingTasksList = document.getElementById("upcomingTasks");
-        upcomingTasksList.innerHTML = '';
-        const upcomingTasks = tasks.filter(task => !task.completed && new Date(task.dueDate) >= new Date());
+        upcomingTasksList.innerHTML = ''; // Clear existing list
         upcomingTasks.forEach(task => {
             const li = document.createElement("li");
-            li.innerText = `${task.title} - Due: ${task.dueDate}`;
+            li.className = "border-b py-2";
+            li.innerText = task.title;
             upcomingTasksList.appendChild(li);
         });
     };
 
-    // Show/hide sections
+    // Show section function
     const showSection = (sectionId) => {
-        document.getElementById("dashboard").classList.add("hidden");
-        document.getElementById("profile").classList.add("hidden");
-        document.getElementById("settings").classList.add("hidden");
-        document.getElementById(sectionId).classList.remove("hidden");
+        const sections = document.querySelectorAll('div[id]');
+        sections.forEach(section => {
+            section.classList.add('hidden');
+        });
+        document.getElementById(sectionId).classList.remove('hidden');
     };
 
-    // Event listeners for navigation
+    // Navigation
     document.querySelectorAll("nav a").forEach(link => {
         link.addEventListener("click", (e) => {
             e.preventDefault();
@@ -153,26 +152,39 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Save Profile
+    // Load default section
+    showSection('dashboard');
+
+    // Profile Save
     saveProfileBtn.addEventListener("click", () => {
-        const name = userName.value;
-        const email = userEmail.value;
-        alert(`Profile saved!\nName: ${name}\nEmail: ${email}`);
+        const name = userName.value.trim();
+        const email = userEmail.value.trim();
+        if (name && email) {
+            alert("Profile saved!");
+            // Save profile data logic here (e.g., to localStorage)
+        } else {
+            alert("Please fill in both fields.");
+        }
     });
 
-    // Theme Selector
+    // Theme Switch
     themeSelector.addEventListener("change", (e) => {
-        document.body.classList.toggle("bg-gray-100", e.target.value === "light");
-        document.body.classList.toggle("bg-gray-800", e.target.value === "dark");
+        if (e.target.value === "dark") {
+            document.body.classList.add("bg-gray-900", "text-white");
+            document.body.classList.remove("bg-gray-100", "text-gray-900");
+        } else {
+            document.body.classList.add("bg-gray-100", "text-gray-900");
+            document.body.classList.remove("bg-gray-900", "text-white");
+        }
     });
 
     // Clear Data
     clearDataBtn.addEventListener("click", () => {
-        localStorage.removeItem("tasks");
-        taskList.innerHTML = '';
-        updateDashboard();
+        if (confirm("Are you sure you want to clear all tasks?")) {
+            localStorage.removeItem("tasks");
+            taskList.innerHTML = '';
+            updateDashboardStats();
+            alert("All tasks cleared!");
+        }
     });
-
-    // Show the dashboard by default
-    showSection('dashboard');
 });
