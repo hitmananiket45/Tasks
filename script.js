@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskList = document.getElementById("taskList");
     const searchInput = document.getElementById("searchInput");
     const filterStatus = document.getElementById("filterStatus");
-    
+
     const userName = document.getElementById("userName");
     const userEmail = document.getElementById("userEmail");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
@@ -172,4 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         taskList.innerHTML = '';
         updateDashboard();
     });
+
+    // Show the dashboard by default
+    showSection('dashboard');
 });
