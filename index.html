@@ -13,66 +13,90 @@
             <div class="text-xl font-bold">Task Manager</div>
             <nav>
                 <ul class="flex space-x-4">
-                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="dashboard">Dashboard</a></li>
-                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="profile">Profile</a></li>
-                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="settings">Settings</a></li>
+                    <li><a href="#" class="hover:text-gray-200" data-target="taskManagerSection">Task Manager</a></li>
+                    <li><a href="#" class="hover:text-gray-200" data-target="dashboardSection">Dashboard</a></li>
+                    <li><a href="#" class="hover:text-gray-200" data-target="profileSection">Profile</a></li>
+                    <li><a href="#" class="hover:text-gray-200" data-target="settingsSection">Settings</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
     <div class="container mx-auto mt-6">
-        <!-- Dashboard Section -->
-        <div id="dashboard">
-            <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold">Total Tasks</h3>
-                    <p id="totalTasks">0</p>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold">Completed Tasks</h3>
-                    <p id="completedTasks">0</p>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold">Pending Tasks</h3>
-                    <p id="pendingTasks">0</p>
-                </div>
+        <!-- Task Manager Section (Main Page) -->
+        <div id="taskManagerSection" class="section">
+            <!-- Add Task Form -->
+            <div class="bg-white shadow-md rounded p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">Add Task</h2>
+                <input id="taskTitle" type="text" class="border border-gray-300 rounded p-2 w-full mb-2" placeholder="Task Title" />
+                <textarea id="taskDescription" class="border border-gray-300 rounded p-2 w-full mb-2" placeholder="Description"></textarea>
+                <input type="date" id="dueDate" class="border border-gray-300 rounded p-2 w-full mb-2" />
+                <select id="priority" class="border border-gray-300 rounded p-2 w-full mb-2">
+                    <option value="">Select Priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <button id="addTaskBtn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Task</button>
             </div>
-            <h3 class="mt-6 font-bold">Upcoming Tasks</h3>
-            <ul id="upcomingTasks" class="bg-white rounded shadow p-4"></ul>
+
+            <!-- Search and Filter Section -->
+            <div class="flex mb-4">
+                <input id="searchInput" type="text" class="border border-gray-300 rounded p-2 w-1/2" placeholder="Search tasks..." />
+                <select id="filterStatus" class="border border-gray-300 rounded p-2 ml-2">
+                    <option value="">All Tasks</option>
+                    <option value="completed">Completed</option>
+                    <option value="incomplete">Incomplete</option>
+                </select>
+            </div>
+
+            <!-- Task List Section -->
+            <h2 class="text-2xl font-bold mb-4">Tasks</h2>
+            <ul id="taskList" class="bg-white rounded shadow-md p-4"></ul>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="section hidden">
+            <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
+            <div class="bg-white shadow-md rounded p-6">
+                <p><strong>Total Tasks:</strong> <span id="totalTasks">0</span></p>
+                <p><strong>Completed Tasks:</strong> <span id="completedTasks">0</span></p>
+                <p><strong>Pending Tasks:</strong> <span id="pendingTasks">0</span></p>
+                <h3 class="text-lg font-bold mt-4">Upcoming Tasks</h3>
+                <ul id="upcomingTasks" class="mt-2"></ul>
+            </div>
         </div>
 
         <!-- Profile Section -->
-        <div id="profile" class="hidden p-6">
+        <div id="profileSection" class="section hidden">
             <h2 class="text-2xl font-bold mb-4">Profile</h2>
-            <div>
-                <label for="userName" class="block">Name:</label>
-                <input type="text" id="userName" class="border rounded p-2 w-full mb-4" />
-                <label for="userEmail" class="block">Email:</label>
-                <input type="email" id="userEmail" class="border rounded p-2 w-full mb-4" />
-                <button id="saveProfileBtn" class="bg-blue-500 text-white p-2 rounded">Save Changes</button>
+            <div class="bg-white shadow-md rounded p-6">
+                <p><strong>Name:</strong> John Doe</p>
+                <p><strong>Email:</strong> john@example.com</p>
+                <!-- Add more user info as needed -->
+                <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-4">Edit Profile</button>
             </div>
         </div>
 
         <!-- Settings Section -->
-        <div id="settings" class="hidden p-6">
+        <div id="settingsSection" class="section hidden">
             <h2 class="text-2xl font-bold mb-4">Settings</h2>
-            <div>
-                <label class="block mb-2">Theme:</label>
-                <select id="themeSelector" class="border rounded p-2 w-full mb-4">
-                    <option value="light">Light Mode</option>
-                    <option value="dark">Dark Mode</option>
-                </select>
+            <div class="bg-white shadow-md rounded p-6">
+                <p>Update your preferences here:</p>
+                <!-- Example Setting -->
+                <label class="block mt-4">
+                    <span class="text-gray-700">Enable Notifications:</span>
+                    <input type="checkbox" class="mt-1">
+                </label>
+                <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-4">Save Settings</button>
             </div>
-            <button id="clearDataBtn" class="bg-red-500 text-white p-2 rounded">Clear All Tasks</button>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="bg-gray-200 text-center p-4 mt-6">
         <p class="text-gray-700">© 2024 Task Manager. All rights reserved.</p>
+        <p><a href="#" class="text-blue-500 hover:underline">Privacy Policy</a> | <a href="#" class="text-blue-500 hover:underline">Terms of Service</a></p>
     </footer>
 
     <script src="script.js"></script>
