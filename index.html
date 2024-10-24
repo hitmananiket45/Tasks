@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Task Manager</title>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">Task Manager</div>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="dashboard">Dashboard</a></li>
+                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="profile">Profile</a></li>
+                    <li><a href="#" class="hover:text-gray-200 nav-link" data-target="settings">Settings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
+    <!-- Main Content -->
+    <div class="container mx-auto mt-6">
+        <!-- Dashboard Section -->
+        <div id="dashboard">
+            <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold">Total Tasks</h3>
+                    <p id="totalTasks">0</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold">Completed Tasks</h3>
+                    <p id="completedTasks">0</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold">Pending Tasks</h3>
+                    <p id="pendingTasks">0</p>
+                </div>
+            </div>
+            <h3 class="mt-6 font-bold">Upcoming Tasks</h3>
+            <ul id="upcomingTasks" class="bg-white rounded shadow p-4"></ul>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile" class="hidden p-6">
+            <h2 class="text-2xl font-bold mb-4">Profile</h2>
+            <div>
+                <label for="userName" class="block">Name:</label>
+                <input type="text" id="userName" class="border rounded p-2 w-full mb-4" />
+                <label for="userEmail" class="block">Email:</label>
+                <input type="email" id="userEmail" class="border rounded p-2 w-full mb-4" />
+                <button id="saveProfileBtn" class="bg-blue-500 text-white p-2 rounded">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="hidden p-6">
+            <h2 class="text-2xl font-bold mb-4">Settings</h2>
+            <div>
+                <label class="block mb-2">Theme:</label>
+                <select id="themeSelector" class="border rounded p-2 w-full mb-4">
+                    <option value="light">Light Mode</option>
+                    <option value="dark">Dark Mode</option>
+                </select>
+            </div>
+            <button id="clearDataBtn" class="bg-red-500 text-white p-2 rounded">Clear All Tasks</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-200 text-center p-4 mt-6">
+        <p class="text-gray-700">© 2024 Task Manager. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
