@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     const taskTitle = document.getElementById("taskTitle");
     const taskDescription = document.getElementById("taskDescription");
@@ -16,9 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to show a section
     const showSection = (sectionId) => {
-        const sections = document.querySelectorAll('div[id]');
+        const sections = ['taskManagerSection', 'dashboardSection', 'profileSection', 'settingsSection'];
         sections.forEach(section => {
-            section.classList.add('hidden');
+            document.getElementById(section).classList.add('hidden');
         });
         document.getElementById(sectionId).classList.remove('hidden');
     };
@@ -32,8 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Show the dashboard by default
-    showSection('dashboard');
+    // Show the task management section by default
+    showSection('taskManagerSection');
 
     // Load tasks from local storage
     const loadTasks = () => {
