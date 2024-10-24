@@ -1,8 +1,13 @@
 // script.js
 document.addEventListener("DOMContentLoaded", () => {
-    const taskInput = document.getElementById("taskInput");
+    const taskTitle = document.getElementById("taskTitle");
+    const taskDescription = document.getElementById("taskDescription");
+    const dueDate = document.getElementById("dueDate");
+    const priority = document.getElementById("priority");
     const addTaskBtn = document.getElementById("addTaskBtn");
     const taskList = document.getElementById("taskList");
+    const searchInput = document.getElementById("searchInput");
+    const filterStatus = document.getElementById("filterStatus");
 
     // Load tasks from local storage
     const loadTasks = () => {
@@ -17,25 +22,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "flex justify-between items-center bg-gray-200 border border-gray-300 rounded p-2 mb-2";
         li.innerHTML = `
-            <span class="task-text">${task}</span>
-            <button class="delete-btn bg-red-500 text-white rounded px-2 hover:bg-red-600">Delete</button>
+            <div>
+                <h3 class="font-bold">${task.title}</h3>
+                <p>${task.description}</p>
+                <p>Due: ${task.dueDate}</p>
+                <p class="text-sm">Priority: <span class="${task.priority === 'High' ? 'text-red-500' : task.priority === 'Medium' ? 'text-yellow-500' : 'text-green-500'}">${task.priority}</span></p>
+            </div>
+            <div>
+                <input type="checkbox" class="complete-checkbox" ${task.completed ? 'checked' : ''} />
+                <button class="delete-btn bg-red-500 text-white rounded px-2 hover:bg-red-600">Delete</button>
+            </div>
         `;
         taskList.appendChild(li);
 
-        // Attach delete event listener
+        // Attach event listeners
+        li.querySelector('.complete-checkbox').addEventListener('change', () => {
+            task.completed = !task.completed;
+            saveTasksToLocalStorage();
+            loadTaskList();
+        });
+
         li.querySelector('.delete-btn').addEventListener('click', () => {
-            li.remove();
             removeTaskFromLocalStorage(task);
+            li.remove();
         });
     };
 
     // Add task event listener
     addTaskBtn.addEventListener("click", () => {
-        const task = taskInput.value.trim();
-        if (task) {
+        const task = {
+            title: taskTitle.value.trim(),
+            description: taskDescription.value.trim(),
+            dueDate: dueDate.value,
+            priority: priority.value,
+            completed: false
+        };
+        if (task.title) {
             addTaskToDOM(task);
             saveTaskToLocalStorage(task);
-            taskInput.value = ""; // Clear input
+            taskTitle.value = ""; // Clear input
+            taskDescription.value = "";
+            dueDate.value = "";
+            priority.value = "";
         }
     });
 
@@ -47,12 +75,32 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Remove task from local storage
-    const removeTaskFromLocalStorage = (task) => {
+    const removeTaskFromLocalStorage = (taskToRemove) => {
         let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks = tasks.filter(t => t !== task);
+        tasks = tasks.filter(task => task.title !== taskToRemove.title);
         localStorage.setItem("tasks", JSON.stringify(tasks));
     };
 
     // Load tasks when the page is loaded
     loadTasks();
+
+    // Search and filter tasks
+    searchInput.addEventListener("input", loadTaskList);
+    filterStatus.addEventListener("change", loadTaskList);
+
+    const loadTaskList = () => {
+        taskList.innerHTML = ''; // Clear existing list
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedStatus = filterStatus.value;
+
+        tasks.forEach(task => {
+            if (
+                task.title.toLowerCase().includes(searchTerm) &&
+                (selectedStatus === "" || (selectedStatus === "completed" && task.completed) || (selectedStatus === "incomplete" && !task.completed))
+            ) {
+                addTaskToDOM(task);
+            }
+        });
+    };
 });
