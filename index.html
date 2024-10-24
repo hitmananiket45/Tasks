@@ -3,62 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>Task Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional custom styles can go here */
+    </style>
 </head>
-<body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="text-xl font-bold">Task Manager</div>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a href="#" class="hover:text-gray-200">Dashboard</a></li>
-                    <li><a href="#" class="hover:text-gray-200">Profile</a></li>
-                    <li><a href="#" class="hover:text-gray-200">Settings</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<body class="bg-gray-100 text-black">
+    <nav class="bg-gray-800 p-4 text-white">
+        <ul class="flex space-x-4">
+            <li><a href="#dashboard" class="hover:underline">Dashboard</a></li>
+            <li><a href="#profile" class="hover:underline">Profile</a></li>
+            <li><a href="#settings" class="hover:underline">Settings</a></li>
+        </ul>
+    </nav>
 
-    <!-- Main Content -->
-    <div class="container mx-auto mt-6">
-        <!-- Add Task Form -->
-        <div class="bg-white shadow-md rounded p-6 mb-6">
-            <h2 class="text-2xl font-bold mb-4">Add Task</h2>
-            <input id="taskTitle" type="text" class="border border-gray-300 rounded p-2 w-full mb-2" placeholder="Task Title" />
-            <textarea id="taskDescription" class="border border-gray-300 rounded p-2 w-full mb-2" placeholder="Description"></textarea>
-            <input type="date" id="dueDate" class="border border-gray-300 rounded p-2 w-full mb-2" />
-            <select id="priority" class="border border-gray-300 rounded p-2 w-full mb-2">
-                <option value="">Select Priority</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
-            <button id="addTaskBtn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Task</button>
+    <div id="dashboard" class="p-6 hidden">
+        <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="font-bold">Total Tasks</h3>
+                <p id="totalTasks">0</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="font-bold">Completed Tasks</h3>
+                <p id="completedTasks">0</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="font-bold">Pending Tasks</h3>
+                <p id="pendingTasks">0</p>
+            </div>
         </div>
-
-        <!-- Search and Filter Section -->
-        <div class="flex mb-4">
-            <input id="searchInput" type="text" class="border border-gray-300 rounded p-2 w-1/2" placeholder="Search tasks..." />
-            <select id="filterStatus" class="border border-gray-300 rounded p-2 ml-2">
-                <option value="">All Tasks</option>
-                <option value="completed">Completed</option>
-                <option value="incomplete">Incomplete</option>
-            </select>
-        </div>
-
-        <!-- Task List Section -->
-        <h2 class="text-2xl font-bold mb-4">Tasks</h2>
-        <ul id="taskList" class="bg-white rounded shadow-md p-4"></ul>
+        <h3 class="mt-6 font-bold">Upcoming Tasks</h3>
+        <ul id="upcomingTasks" class="bg-white rounded shadow p-4"></ul>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-200 text-center p-4 mt-6">
-        <p class="text-gray-700">© 2024 Task Manager. All rights reserved.</p>
-        <p><a href="#" class="text-blue-500 hover:underline">Privacy Policy</a> | <a href="#" class="text-blue-500 hover:underline">Terms of Service</a></p>
-    </footer>
+    <div id="profile" class="p-6 hidden">
+        <h2 class="text-2xl font-bold mb-4">Profile</h2>
+        <div>
+            <label for="userName" class="block">Name:</label>
+            <input type="text" id="userName" class="border rounded p-2 w-full mb-4" />
+            <label for="userEmail" class="block">Email:</label>
+            <input type="email" id="userEmail" class="border rounded p-2 w-full mb-4" />
+            <button id="saveProfileBtn" class="bg-blue-500 text-white p-2 rounded">Save Changes</button>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <div id="settings" class="p-6 hidden">
+        <h2 class="text-2xl font-bold mb-4">Settings</h2>
+        <div>
+            <label class="block mb-2">Theme:</label>
+            <select id="themeSelector" class="border rounded p-2 w-full mb-4">
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+            </select>
+        </div>
+        <button id="clearDataBtn" class="bg-red-500 text-white p-2 rounded">Clear All Tasks</button>
+    </div>
+
+    <script>
+        // Load tasks and user data from localStorage
+        const loadTasks = () => JSON.parse(localStorage.getItem("tasks")) || [];
+        const loadUserProfile = () => JSON.parse(localStorage.getItem("user")) || { name: "", email: "" };
+
+        // Update Dashboard Statistics
+        const updateDashboard = () => {
+            const tasks = loadTasks();
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(task => task.completed).length;
+            const pendingTasks = totalTasks - completedTasks;
+
+            document.getElementById("totalTasks").innerText = totalTasks;
+            document.getElementById("completedTasks").innerText = completedTasks;
+            document.getElementById("pendingTasks").innerText = pendingTasks;
+
+            // List upcoming tasks (sort by due date)
+            const upcomingTasks = tasks.filter(task => !task.completed).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).slice(0, 5);
+            const upcomingTasksList = document.getElementById("upcomingTasks");
+            upcomingTasksList.innerHTML = ''; // Clear existing tasks
+            upcomingTasks.forEach(task => {
+                const li = document.createElement("li");
+                li.textContent = `${task.title} - Due: ${task.dueDate}`;
+                upcomingTasksList.appendChild(li);
+            });
+        };
+
+        // Load User Profile Data
+        const loadUserProfileData = () => {
+            const user = loadUserProfile();
+            document.getElementById("userName").value = user.name;
+            document.getElementById("userEmail").value = user.email;
+        };
+
+        // Save User Profile Data
+        document.getElementById("saveProfileBtn").addEventListener("click", () => {
+            const user = {
+                name: document.getElementById("userName").value.trim(),
+                email: document.getElementById("userEmail").value.trim(),
+            };
+            localStorage.setItem("user", JSON.stringify(user));
+            alert("Profile updated successfully!");
+        });
+
+        // Theme Toggle Functionality
+        const themeSelector = document.getElementById("themeSelector");
+        themeSelector.addEventListener("change", () => {
+            if (themeSelector.value === "dark") {
+                document.body.classList.add("bg-gray-800", "text-white");
+                document.body.classList.remove("bg-gray-100", "text-black");
+            } else {
+                document.body.classList.remove("bg-gray-800", "text-white");
+                document.body.classList.add("bg-gray-100", "text-black");
+            }
+        });
+
+        // Clear All Tasks Functionality
+        document.getElementById("clearDataBtn").addEventListener("click", () => {
+            if (confirm("Are you sure you want to clear all tasks?")) {
+                localStorage.removeItem("tasks");
+                alert("All tasks cleared!");
+                updateDashboard(); // Refresh the dashboard
+                document.getElementById("upcomingTasks").innerHTML = ''; // Clear upcoming tasks list
+            }
+        });
+
+        // Show/Hide sections based on navigation clicks
+        document.querySelectorAll("nav a").forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const section = event.target.getAttribute("href").substring(1);
+                
+                // Hide all sections
+                document.querySelectorAll("#dashboard, #profile, #settings").forEach(sec => {
+                    sec.style.display = 'none';
+                });
+                
+                // Show the selected section
+                document.getElementById(section).style.display = 'block';
+            });
+        });
+
+        // Initialize the application
+        const init = () => {
+            document.getElementById("dashboard").style.display = 'block'; // Show the dashboard by default
+            updateDashboard(); // Update dashboard stats
+            loadUserProfileData(); // Load user profile data
+        };
+
+        // Call the init function when the page loads
+        window.onload = init;
+    </script>
 </body>
 </html>
