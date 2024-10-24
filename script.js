@@ -1,4 +1,3 @@
-// script.js
 document.addEventListener("DOMContentLoaded", () => {
     const taskTitle = document.getElementById("taskTitle");
     const taskDescription = document.getElementById("taskDescription");
@@ -8,6 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskList = document.getElementById("taskList");
     const searchInput = document.getElementById("searchInput");
     const filterStatus = document.getElementById("filterStatus");
+    
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const themeSelector = document.getElementById("themeSelector");
+    const clearDataBtn = document.getElementById("clearDataBtn");
 
     // Load tasks from local storage
     const loadTasks = () => {
@@ -15,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tasks.forEach(task => {
             addTaskToDOM(task);
         });
+        updateDashboard();
     };
 
     // Add task to the DOM
@@ -40,11 +46,13 @@ document.addEventListener("DOMContentLoaded", () => {
             task.completed = !task.completed;
             saveTasksToLocalStorage();
             loadTaskList();
+            updateDashboard();
         });
 
         li.querySelector('.delete-btn').addEventListener('click', () => {
             removeTaskFromLocalStorage(task);
             li.remove();
+            updateDashboard();
         });
     };
 
@@ -64,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             taskDescription.value = "";
             dueDate.value = "";
             priority.value = "";
+            updateDashboard();
         }
     });
 
@@ -102,5 +111,65 @@ document.addEventListener("DOMContentLoaded", () => {
                 addTaskToDOM(task);
             }
         });
+        updateDashboard();
     };
+
+    // Update Dashboard Information
+    const updateDashboard = () => {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const totalTasks = tasks.length;
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const pendingTasks = totalTasks - completedTasks;
+
+        document.getElementById("totalTasks").innerText = totalTasks;
+        document.getElementById("completedTasks").innerText = completedTasks;
+        document.getElementById("pendingTasks").innerText = pendingTasks;
+
+        // Update upcoming tasks
+        const upcomingTasksList = document.getElementById("upcomingTasks");
+        upcomingTasksList.innerHTML = '';
+        const upcomingTasks = tasks.filter(task => !task.completed && new Date(task.dueDate) >= new Date());
+        upcomingTasks.forEach(task => {
+            const li = document.createElement("li");
+            li.innerText = `${task.title} - Due: ${task.dueDate}`;
+            upcomingTasksList.appendChild(li);
+        });
+    };
+
+    // Show/hide sections
+    const showSection = (sectionId) => {
+        document.getElementById("dashboard").classList.add("hidden");
+        document.getElementById("profile").classList.add("hidden");
+        document.getElementById("settings").classList.add("hidden");
+        document.getElementById(sectionId).classList.remove("hidden");
+    };
+
+    // Event listeners for navigation
+    document.querySelectorAll("nav a").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetSection = e.target.getAttribute("data-target");
+            showSection(targetSection);
+        });
+    });
+
+    // Save Profile
+    saveProfileBtn.addEventListener("click", () => {
+        const name = userName.value;
+        const email = userEmail.value;
+        alert(`Profile saved!\nName: ${name}\nEmail: ${email}`);
+    });
+
+    // Theme Selector
+    themeSelector.addEventListener("change", (e) => {
+        document.body.classList.toggle("bg-gray-100", e.target.value === "light");
+        document.body.classList.toggle("bg-gray-800", e.target.value === "dark");
+    });
+
+    // Clear Data
+    clearDataBtn.addEventListener("click", () => {
+        localStorage.removeItem("tasks");
+        taskList.innerHTML = '';
+        updateDashboard();
+    });
 });
